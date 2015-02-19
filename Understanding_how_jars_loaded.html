@@ -1,0 +1,333 @@
+<html>
+<head>
+	
+   
+   <title>Ashokkumar Subramanian - Experiences of software development</title>
+
+	<meta charset="utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <meta name="author" content="Ashokkumar Subramanian "/>
+  <meta name="copyright" content="&copy; Copyright 2004 to Present"/>
+
+  <!-- all the mobile settings -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1">
+
+  <!-- <meta name="MobileOptimized" content="320"> -->
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta name="date" content="--" />
+	<meta name="robots" content="noodp, noydir" />
+  <meta name="description" content="Sharing the experiences of enterprise application development, computer science and engineering" />
+   
+  <meta name="keywords" content="J2EE, J2EE Frameworks, Enterprise Architecture, Distributed, Cloud Computing, Performance" />
+   
+   <link rel="stylesheet" href="/css/foundation.css" />
+   <link rel="stylesheet" href="/css/sandbox.css" />
+   <link rel="stylesheet" href="/css/keys.css" type="text/css" />
+   <link rel="stylesheet" href="/css/syntax.css" />
+
+   <script src="/js/modernizr.js"></script>
+   <script src="/js/jquery.js"></script>
+
+
+
+</head>
+<body>
+
+
+	<section id="titlebar">
+
+		<div class="row">
+
+			<div class="large-offset-1 columns">
+				<div class="large-1 columns">
+					
+					<a href="/"  class="twitter-profile-icon" data-original-title="Ashok Subramanian">
+					        <img src="https://media.licdn.com/mpr/mpr/shrink_200_200/p/7/000/256/253/051cf01.jpg" alt="Ashok Subramanian" class="avatar size73">
+					</a>
+				</div>
+
+				<div class="large-11 columns site-title">
+					<h1>
+						Ashokkumar Subramanian
+					</h1>
+					
+					<h5 class="tagline">engineer, developer, photographer, food </h5>
+					
+					<div >
+
+
+					<div  class="nav-icons">
+					
+						<a href="/" title="Home - Ashokkumar Subramanian">Home</a>
+						<a href="/posts.html" title="All Posts">	| 	Posts</a>
+						<a href="/about.html" title="About Ashokkumar Subramanian">	|	About Me</a>
+						<a href="https://plus.google.com/116545511063360353852">|	gPlus</a> 	
+						<a href="https://github.com/ashokprof" title="Github - Ashok">	|	MyGitHub</a> 	
+
+						<!-- <a href="http://500px.com/maheshsubramaniya" class="round-photos-icon" title="Photos"></a> 	-->
+
+						<!-- <a href="food.html" class="round-cooking-icon" title="Cooking"></a> 	 -->
+
+						<!-- <a href="http://www.maheshsubramaniya.com/feeds.html" class="round-rss-icon" title="Feed"></a> 	-->
+					</div>
+						
+						<div class="" id="searchbox" style="">
+							<form>
+								<input type="text" id="st-search-input" class="st-search-input" style="height: 30px;" autocomplete="off" autocorrect="off" autocapitalize="off">
+							</form>		
+						</div>
+						
+
+					</div>
+
+
+
+				</div>
+			</div>
+		</div>
+
+	</section>
+
+	
+	<section id="searchresults">
+		<div class="row">
+			<div class="large-offset-1 columns">
+				<div id="st-results-container"></div>		
+			</div>
+			<script type="text/javascript">
+			var Swiftype = window.Swiftype || {};
+			  (function() {
+			    Swiftype.key = 'wYEXkbXYzykt7HezLKNc';
+			    Swiftype.renderStyle = 'inline';
+				Swiftype.searchSearchFields = {
+				    "page": ["title^5", "body", "article"]
+				};
+			    /** DO NOT EDIT BELOW THIS LINE **/
+			    var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+			    script.src = "//s.swiftypecdn.com/embed.js";
+			    var entry = document.getElementsByTagName('script')[0];
+			    entry.parentNode.insertBefore(script, entry);
+			  }());
+			</script>
+			
+		</div>
+	</section>
+<article class="post single">
+
+	<header class="post-header">
+		  <h2 class="post-title">Understanding how jars are loaded into JVM from a directory in Linux</h2>
+	</header>
+	<p><p><strong>Question</strong>: If the <code>lib/</code> folder has <code>jar1.jar</code> and <code>jar2.jar</code>, what is the order of the jar loading into the JVM if you use Linux(EXT3 file system)?</p>
+
+<p><strong>Short Answer</strong>: One cannot say or technically, <strong>Random</strong>.</p>
+
+<p>The order in which Jar files are loaded into JVM are <strong>influenced by how the file system orders its file in the directory</strong>. Since the <code>java.io.File</code> API depends on the native API, different platforms lists file in different order.</p>
+
+<h3 id="ext3-file-system">EXT3 file system</h3>
+
+<p>EXT3 file system is <a href="https://www.kernel.org/doc/Documentation/filesystems/ext3.txt">defacto file system in Linux kernel </a> for over 15 years. There are <a href="https://en.wikipedia.org/wiki/Ext3#References">some extensive documentation </a> on what it is and how it works.</p>
+
+<p>Lets see how the files are created and fetched in the ext3 file system.</p>
+
+<p>Create 5 files</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span><span class="nb">echo</span> <span class="sb">`</span>seq <span class="m">1</span> 5<span class="sb">`</span> <span class="p">|</span> xargs touch</code></pre></div>
+
+<p>List the file in alphabetical order. The <code>ls</code> command <a href="http://www.freebsd.org/cgi/man.cgi?ls">without any argumentt</a> will list files in lexicographical order.</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>ls
+<span class="m">1</span>   <span class="m">2</span>   <span class="m">3</span>   <span class="m">4</span>   5</code></pre></div>
+
+<p>List the files in the list order. Again these files are sorted by lexicographical order.</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>ls -l
+total 0
+-rw-rw-r-- <span class="m">1</span> training training <span class="m">0</span> Jul <span class="m">10</span> 02:04 1
+-rw-rw-r-- <span class="m">1</span> training training <span class="m">0</span> Jul <span class="m">10</span> 02:04 2
+-rw-rw-r-- <span class="m">1</span> training training <span class="m">0</span> Jul <span class="m">10</span> 02:04 3
+-rw-rw-r-- <span class="m">1</span> training training <span class="m">0</span> Jul <span class="m">10</span> 02:04 4
+-rw-rw-r-- <span class="m">1</span> training training <span class="m">0</span> Jul <span class="m">10</span> 02:04 5</code></pre></div>
+
+<p>List the files in <strong>directory order</strong> <code>-U</code> switch will list the file in <strong>unordered</strong> and which is the way files are arranged the file in the file system</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>ls -U
+<span class="m">2</span>  <span class="m">1</span>  <span class="m">5</span>  <span class="m">3</span>  4</code></pre></div>
+
+<p>For more clarity, let us list the file in list order</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>ls -Ul
+total 0
+-rw-rw-r-- <span class="m">1</span> training training <span class="m">0</span> Jul <span class="m">10</span> 02:04 2
+-rw-rw-r-- <span class="m">1</span> training training <span class="m">0</span> Jul <span class="m">10</span> 02:04 1
+-rw-rw-r-- <span class="m">1</span> training training <span class="m">0</span> Jul <span class="m">10</span> 02:04 5
+-rw-rw-r-- <span class="m">1</span> training training <span class="m">0</span> Jul <span class="m">10</span> 02:04 3
+-rw-rw-r-- <span class="m">1</span> training training <span class="m">0</span> Jul <span class="m">10</span> 02:04 4</code></pre></div>
+
+<p>If you think the files are ordered by <strong>inode</strong> number, then you may be wrong again. Here is the listing of files with <code>inode</code> number in 1st column.</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ </span>ls -Uli
+total 0
+<span class="m">671786</span> -rw-rw-r-- <span class="m">1</span> training training <span class="m">0</span> Jul <span class="m">10</span> 02:04 2
+<span class="m">671780</span> -rw-rw-r-- <span class="m">1</span> training training <span class="m">0</span> Jul <span class="m">10</span> 02:04 1
+<span class="m">671789</span> -rw-rw-r-- <span class="m">1</span> training training <span class="m">0</span> Jul <span class="m">10</span> 02:04 5
+<span class="m">671787</span> -rw-rw-r-- <span class="m">1</span> training training <span class="m">0</span> Jul <span class="m">10</span> 02:04 3
+<span class="m">671788</span> -rw-rw-r-- <span class="m">1</span> training training <span class="m">0</span> Jul <span class="m">10</span> 02:04 4
+<span class="err">$</span></code></pre></div>
+
+<p>To add more interesting discussion, let us look across different machines with same Operating system and EXT3 file system. </p>
+
+<p>EXT3 file system <a href="https://www.kernel.org/doc/ols/2005/ols2005v1-pages-77-104.pdf">hash the filenames</a> and places the entry in the directory level inode table.</p>
+
+<blockquote>
+  <p>readdir() returning filenames in a hash-sorted order, so that reads from the inode table would be done in a random order.</p>
+</blockquote>
+
+<p>So now you got an understanding of what directory ordering will look like.</p>
+
+<p>So if your one machine load jars as <code>jar1.jar, jar2.jar</code>, another Linux machine with same OS release may load as <code>jar2.jar,jar1.jar</code> or may be same order as the other machine. <strong>Random</strong>.</p>
+
+<p>Since it is <strong>random</strong>, you cannot expect the same ordering in another machine with EXT3 file system.</p>
+
+<h3 id="why-is-this-important-to-understand">Why is this important to understand?</h3>
+
+<p>With the usage of Maven, developers tend to miss to verify the list of jars gets packaged into a web application. When maven pulls the dependencies and the dependencies uses two different versions same component, say <code>javax.mail 1.3,1.4</code> then EXT3 file system doesn’t guarantee the order of jar loaded.</p>
+
+<p>So always exercise caution and do review your <code>lib/</code> folder to see what jars are pulled and packaged by your maven or any other packaging tool you use.</p>
+
+<p>If you have tools like IDEs like <a href="http://www.jetbrains.com/idea/">IntelliJ </a>, try to generate the POM diagram and review the jars and its transitive dependencies.</p>
+</p>
+
+
+
+	<small>	
+		<div class="tags">
+			Tagged under: 
+			
+				<span>java,</span>
+			
+				<span>jee,</span>
+			
+				<span>j2ee,</span>
+			
+				<span>linux,</span>
+			
+				<span>filesystem,</span>
+			
+		</div>
+
+	</small>
+
+	<nav class="page-navigation">
+	        <div class="clear">&nbsp;</div> 
+	        <div class="left"> 
+	         
+	                <a href="/article/when-to-refactor-the-code.html" title="Previous Post: 
+	When to re-factor your code">&laquo; When to re-factor your code</a> 
+	         
+	        </div> 
+
+	        <div class="right"> 
+	         
+	        </div> 
+	        <div class="clear">&nbsp;</div> 
+
+	</nav>
+
+	<div id="related_posts">
+		<h3>Related Posts</h3>
+		<ul>
+		
+		  <li><a href="/article/when-to-refactor-the-code.html">When to re-factor your code</a></li>
+		
+		  <li><a href="/article/IE-heisenbug.html">IE Heisenbug</a></li>
+		
+		  <li><a href="/article/go-how-to-install-packages.html">Go lang - how to install packages</a></li>
+		
+		  <li><a href="/article/young-parents-should-read-freakonomics.html">New parents should read Freakonomics, than watching it.</a></li>
+		
+		  <li><a href="/article/kelvi-stackoverflow-dashboard-app.html">Kelvi - StackOverflow Questions Monitor</a></li>
+			
+		</ul>
+	</div>
+	
+  	<footer >
+
+<a class="punch" href="https://twitter.com/intent/tweet?text=Nice Read: Understanding how jars are loaded into JVM from a directory in Linux&url=http://www.maheshsubramaniya.com/article/understanding-how-jars-are-loaded-into-jvm-from-a-directory.html&via=msubramaniya">
+	<span style="
+	    background: url('https://dev.twitter.com/sites/default/files/images_documentation/bird_blue_32.png') no-repeat 0 0;
+	    width: 32px;
+	    height: 32px;
+	    display: block;
+	    float: left;
+	    margin-left: 10px;
+	"></span>
+	<span style="
+	    float: left;
+	    margin-left: 10px;
+	">I like it</span>
+	</a>
+
+		<small class="right">	
+			Published on: <time datetime="2014-07-10">10 Jul 2014</time>
+		</small>
+
+	<div id="disqus_thread"></div>
+	<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  	</footer>
+  	<!-- by Mahesh Subramaniya -->
+</article>
+<footer id="footer">
+		<div class="center" style="text-align:center;">
+			
+		    <ul class="menu" >
+		      <li></li>
+		      <li><a href="/" title="Home">Home</a></li>
+		      <li><a href="/about.html" title="About">About</a></li>
+		      <li><a href="/posts.html" title="About">Posts</a></li>
+		      <!--<li><a href="http://500px.com/maheshsubramaniya" title="Photography">Photography</a></li> -->
+		      <!-- <li><a href="/food.html" title="Food &amp; Cooking">Food &amp; Cooking</a></li> -->
+		      <li><a href="/tamil.html" title="தமிழ்">தமிழ்</a></li>
+		      <li><a href="/contact.html" title="Contact">Contact Me</a></li>
+		    </ul>
+		    <small>© Ashokkumar Subramanian - 2004 to today</small>
+		  </div>
+	</footer>
+
+</body>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		$("#search").on('click',function(){$('#searchbox').toggle();})
+	})
+</script>
+
+
+<script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
+
+<script type="text/javascript">
+    var disqus_shortname = 'ashokprof';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-46244950-1', 'ashokkumarsubramanian.com');
+  ga('send', 'pageview');
+</script>
+
+</html>
